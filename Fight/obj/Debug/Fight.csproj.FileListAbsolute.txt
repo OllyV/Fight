@@ -1,0 +1,9 @@
+D:\Olya\c#\Fight\Fight\bin\Debug\Fight.exe.config
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.csprojResolveAssemblyReference.cache
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.FRMfight.resources
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.Properties.Resources.resources
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.csproj.GenerateResource.Cache
+D:\Olya\c#\Fight\Fight\bin\Debug\Fight.exe
+D:\Olya\c#\Fight\Fight\bin\Debug\Fight.pdb
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.exe
+D:\Olya\c#\Fight\Fight\obj\Debug\Fight.pdb
