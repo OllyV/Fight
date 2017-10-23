@@ -12,16 +12,10 @@ using Microsoft.VisualBasic;
 
 namespace Fight
 {
-
-
     public enum Body { HEAD, CHEST, LEGS };
     public partial class FRMfight : Form
     {
-        Player PlayerPlayer;
-        Player PlayerComp;
-
-        private Boolean turn;
-
+        Game game;
         public FRMfight()
         {
             InitializeComponent();
@@ -29,32 +23,29 @@ namespace Fight
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            PBplayer.Minimum = 0;
+            PBplayer.Maximum = 100;
+            PBcomp.Minimum = 0;
+            PBcomp.Maximum = 100;
         }
 
         private void BTNnew_Click(object sender, EventArgs e)
         {
             lSTlog.Items.Clear();
-            PlayerPlayer = new Player(TBname.Text);
-            PlayerComp = new Player("Компьютер");
-            PlayerPlayer.Wound += player_wound;
-            PlayerComp.Wound += player_wound;
-            PlayerPlayer.Block += player_block;
-            PlayerComp.Block += player_block;
-            PlayerPlayer.Death += player_death;
-            PlayerComp.Death += player_death;
+            game = new Game(TBname.Text);
+            game.Log += game_log;
+            game.Death += game_death;
+            game.Turn += game_turn;
+            game.Choice += game_choice;
+            game.LogHP += game_logHP;
 
-            LBplayer.Text = PlayerPlayer.name;
-            LBcomp.Text = PlayerComp.name;
-            LBplayerHP.Text = Convert.ToString(PlayerPlayer.HP);
-            LBcompHP.Text = Convert.ToString(PlayerComp.HP);
+            LBplayer.Text = TBname.Text;
+            LBcomp.Text = "Компьютер";
+            LBplayerHP.Text = "100";
+            LBcompHP.Text = "100";
 
-            PBplayer.Minimum = 0;
-            PBplayer.Maximum = 100;
-            PBcomp.Minimum = 0;
-            PBcomp.Maximum = 100;
-            PBplayer.Value = PlayerPlayer.HP;
-            PBcomp.Value = PlayerComp.HP;
+            PBplayer.Value = 100;
+            PBcomp.Value = 100;
 
             BTNnew.Visible = false;
             TBname.Visible = false;
@@ -62,88 +53,45 @@ namespace Fight
             BTNturn.Visible = true;
             
             BTNturn.Text = "Атакуйте!";
-            turn = true;
+        }
+        private void BTNturn_Click(object sender, EventArgs e)
+        {
+            game.makeTurn();
         }
 
 
-
-        private void player_wound(object sender, PlayerEventArgs e)
+        private void game_death(string s)
         {
-            lSTlog.Items.Add(String.Format("Игрок {0} закрыл: {1} и получил урон. Здоровье:{2}",e.Name, e.Blocked, e.HP));
-        }
-        private void player_block(object sender, PlayerEventArgs e)
-        {
-            lSTlog.Items.Add(String.Format("Игрок {0} закрыл: {1} и отбил атаку. Здоровье:{2}", e.Name, e.Blocked, e.HP));
-        }
-        private void player_death(object sender, PlayerEventArgs e)
-        {
-            lSTlog.Items.Add(String.Format("Игрок {0} погиб. Игра окончена.", e.Name));
+            lSTlog.Items.Add(s);
             BTNnew.Visible = true;
             TBname.Visible = true;
             LBname.Visible = true;
             BTNturn.Visible = false;
         }
 
-        private void BTNturn_Click(object sender, EventArgs e)
+        private void game_log(string s)
         {
-            
-            Body PlayerSelection = playerSelection();
-            Body CompSelection = compSelection();
-            if (turn)
-            {
-                lSTlog.Items.Add(String.Format("Игрок {0} бьет в {1}. Игрок {2} закрывает {3}. "
-                    , PlayerPlayer.name, PlayerSelection, PlayerComp.name, CompSelection));
-                PlayerComp.setBlock(CompSelection);
-                PlayerComp.getHit(PlayerSelection);
-
-                if (PlayerComp.HP <= 0) {
-                    lSTlog.Items.Add(String.Format("Игрок {0} победил!", PlayerPlayer.name));
-                }
-                BTNturn.Text = "Защищайтесь!";
-            }
-            else {
-                lSTlog.Items.Add(String.Format("Игрок {0} бьет в {1}. Игрок {2} закрывает {3}. "
-                    , PlayerComp.name, CompSelection, PlayerPlayer.name, PlayerSelection));
-                PlayerPlayer.setBlock(PlayerSelection);
-                PlayerPlayer.getHit(CompSelection);
-
-                if (PlayerPlayer.HP <= 0) {
-                    lSTlog.Items.Add(String.Format("Игрок {0} победил!", PlayerComp.name));
-                }
-                BTNturn.Text = "Атакуйте!";
-            }
-            LBplayerHP.Text = Convert.ToString(PlayerPlayer.HP);
-            LBcompHP.Text = Convert.ToString(PlayerComp.HP);
-            PBplayer.Value = PlayerPlayer.HP;
-            PBcomp.Value = PlayerComp.HP;
-            turn = !turn;
+            lSTlog.Items.Add(s);
+        }
+        private void game_turn(string s)
+        {
+            BTNturn.Text = s;
+        }
+        private void game_logHP(int player, int comp)
+        {
+            LBplayerHP.Text = Convert.ToString(player);
+            LBcompHP.Text = Convert.ToString(comp);
+            PBplayer.Value = player;
+            PBcomp.Value = comp;
         }
 
-        private Body playerSelection()
+        private Body game_choice()
         {
             if (RB1.Checked == true)
             {
                 return Body.HEAD;
             }
             else if (RB2.Checked == true)
-            {
-                return Body.CHEST;
-            }
-            else
-            {
-                return Body.LEGS;
-            }
-        }
-
-        private Body compSelection()
-        {
-            Random rand = new Random();
-            int r = rand.Next(0, 3);
-            if (r==0)
-            {
-                return Body.HEAD;
-            }
-            else if (r==1)
             {
                 return Body.CHEST;
             }
